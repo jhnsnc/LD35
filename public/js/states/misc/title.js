@@ -13,7 +13,6 @@ var titleState = function(game) {};
       this.displayElements.alpha = 0.0;
 
       //title
-      opacity = 0.75;
       txtTitle = createGameText({
         x: 540,
         y: 150,
@@ -22,7 +21,6 @@ var titleState = function(game) {};
         strokeThickness: 0
       }, this);
       txtTitle.fill = '#fff';
-      txtTitle.alpha = opacity;
       txtTitle.fontWeight = 700;
       txtTitle.anchor.setTo(0.5, 0.5);
       this.displayElements.add(txtTitle);
