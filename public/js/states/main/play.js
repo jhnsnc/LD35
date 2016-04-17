@@ -6,6 +6,8 @@ var playState = function(game) {};
     create: function() {
       console.log("Starting Level Play");
 
+      this.isCompleting = false;
+
       var i;
 
       this.gridOffset = {
@@ -53,16 +55,16 @@ var playState = function(game) {};
       this.timeLabel.fontWeight = 300;
       this.timeLabel.anchor.setTo(0.0, 0.5);
 
-      // puzzle counter
-      this.puzzleCountLabel = createGameText({
+      // progres indicator
+      this.progresIndicator = createGameText({
         x: 540,
         y: 40,
-        text: 'Puzzle: 1/' + NUM_PLAYSETS,
+        text: 'Progress: 1/' + NUM_PLAYSETS,
         fontSize: 30,
         strokeThickness: 8
       }, this);
-      this.puzzleCountLabel.fontWeight = 300;
-      this.puzzleCountLabel.anchor.setTo(0.0, 0.5);
+      this.progresIndicator.fontWeight = 300;
+      this.progresIndicator.anchor.setTo(0.0, 0.5);
 
       //fade in cover graphic (black)
       this.introCover = this.game.add.graphics(0, 0);
@@ -76,12 +78,26 @@ var playState = function(game) {};
 
       // decode audio -- continue setup after decoded
       this.setupAudio();
+
+      // timer events!
+      this.activePulseTimer1 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShape, this);
+      this.game.time.events.repeat(SHAPES_PULSE_SEPARATION, 0, function() {
+        this.activePulseTimer2 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShape, this);
+      }, this);
+      this.game.time.events.repeat(SHAPES_PULSE_SEPARATION * 2, 0, function() {
+        this.activePulseDestinationTimer1 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShapeDestination, this);
+      }, this);
+      this.game.time.events.repeat(SHAPES_PULSE_SEPARATION * 3, 0, function() {
+        this.activePulseDestinationTimer2 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShapeDestination, this);
+      }, this);
     },
     update: function(evt) {
-      // update timer
-      var timeMs = '' + ((this.game.time.now - this.startTime) / 1000);
-      timeMs = timeMs.slice(0, timeMs.indexOf('.') + 2);
-      this.timeLabel.text = timeMs;
+      if (!this.isCompleting) {
+        // update timer
+        var timeMs = '' + ((this.game.time.now - this.startTime) / 1000);
+        timeMs = timeMs.slice(0, timeMs.indexOf('.') + 2);
+        this.timeLabel.text = timeMs;
+      }
 
       // rotate shapes
       var i;
@@ -114,6 +130,8 @@ var playState = function(game) {};
   playState.prototype.completeLevel = function() {
     console.log('Boom! Done. Finishing level');
 
+    this.isCompleting = true;
+
     var self = this;
     var gfxCover;
 
@@ -122,7 +140,7 @@ var playState = function(game) {};
     this.game.finishTime = this.game.finishTime.slice(0, this.game.finishTime.indexOf('.') + 2);
 
     // fade music
-    // this.fadeAllMusic(3500);
+    this.fadeAllMusic(3000);
 
     // fade in cover graphic (black)
     gfxCover = this.game.add.graphics(0, 0);
@@ -131,7 +149,7 @@ var playState = function(game) {};
     gfxCover.endFill();
     gfxCover.alpha = 0.0;
     this.game.add.tween(gfxCover)
-      .to({alpha: 1.0}, 1500, Phaser.Easing.Sinusoidal.Out, true)
+      .to({alpha: 1.0}, 3100, Phaser.Easing.Sinusoidal.Out, true)
       .onComplete.add(function() {
         self.game.state.start("Victory");
       }, this);
@@ -170,7 +188,7 @@ var playState = function(game) {};
 
     if (this.currentPlaysetIdx < NUM_PLAYSETS) {
       // update label
-      this.puzzleCountLabel.text = 'Puzzle: ' + (this.currentPlaysetIdx + 1) + '/' + NUM_PLAYSETS;
+      this.progresIndicator.text = 'Progress: ' + (this.currentPlaysetIdx + 1) + '/' + NUM_PLAYSETS;
 
       // fade in next playset
       this.grid = this.playsets[this.currentPlaysetIdx].grid;

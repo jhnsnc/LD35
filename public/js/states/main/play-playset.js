@@ -169,6 +169,8 @@ playState.prototype.generatePlaySet = function() {
   for (i = 0; i < playset.shapes.length; i += 1) {
     playset.displayGroup.add(playset.shapes[i].sprite);
     playset.displayGroup.add(playset.shapes[i].destinationSprite);
+    playset.displayGroup.add(playset.shapes[i].pulseEmitter);
+    playset.displayGroup.add(playset.shapes[i].destinationPulseEmitter);
   }
 
   return playset;

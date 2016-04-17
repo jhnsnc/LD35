@@ -27,7 +27,7 @@ var victoryState = function(game) {};
       txtTime = createGameText({
         x: 540,
         y: 280,
-        text: 'You finished all '+ NUM_PLAYSETS +' puzzles',
+        text: 'You finished in '+ (this.game.finishTime) + ' seconds!',
         fontSize: 40,
         strokeThickness: 8
       }, this);
@@ -36,7 +36,7 @@ var victoryState = function(game) {};
       txtTime = createGameText({
         x: 540,
         y: 360,
-        text: 'in ' + (this.game.finishTime) + ' seconds!',
+        text: ' ',
         fontSize: 40,
         strokeThickness: 8
       }, this);
