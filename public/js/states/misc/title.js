@@ -15,7 +15,7 @@ var titleState = function(game) {};
       //title
       txtTitle = createGameText({
         x: 540,
-        y: 150,
+        y: 200,
         text: 'GOOD GAEM',
         fontSize: 120,
         strokeThickness: 0

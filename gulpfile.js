@@ -101,6 +101,7 @@ gulp.task('scripts', function () {
     config.jsSrcDir + '/states/main/play-input.js',
     config.jsSrcDir + '/states/main/play-grid.js',
     config.jsSrcDir + '/states/main/play-shapes.js',
+    config.jsSrcDir + '/states/main/play-playset.js',
   ];
 
   return gulp.src(files)

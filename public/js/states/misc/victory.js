@@ -7,7 +7,7 @@ var victoryState = function(game) {};
     create: function() {
       console.log("Showing victory screen");
 
-      var txtTitle, txtLevel, btnStartGame;
+      var txtTitle, txtTime, btnStartGame;
 
       this.displayElements = this.game.add.group();
       this.displayElements.alpha = 0.0;
@@ -16,7 +16,7 @@ var victoryState = function(game) {};
       txtTitle = createGameText({
         x: 540,
         y: 140,
-        text: 'Victory!',
+        text: 'Done!',
         fontSize: 80,
         strokeThickness: 8
       }, this);
@@ -24,30 +24,29 @@ var victoryState = function(game) {};
       this.displayElements.add(txtTitle);
 
       //new level
-      txtLevel = createGameText({
+      txtTime = createGameText({
         x: 540,
         y: 280,
-        text: 'you survived level ' + (this.game.level) + '!',
+        text: 'You finished all '+ NUM_PLAYSETS +' puzzles',
         fontSize: 40,
         strokeThickness: 8
       }, this);
-      txtLevel.anchor.setTo(0.5, 0.5);
-      this.displayElements.add(txtLevel);
-      txtLevel = createGameText({
+      txtTime.anchor.setTo(0.5, 0.5);
+      this.displayElements.add(txtTime);
+      txtTime = createGameText({
         x: 540,
-        y: 330,
-        text: '(' + (this.game.difficulty) + ' difficulty)',
+        y: 360,
+        text: 'in ' + (this.game.finishTime) + ' seconds!',
         fontSize: 40,
         strokeThickness: 8
       }, this);
-      txtLevel.fontWeight = 300;
-      txtLevel.anchor.setTo(0.5, 0.5);
-      this.displayElements.add(txtLevel);
+      txtTime.anchor.setTo(0.5, 0.5);
+      this.displayElements.add(txtTime);
 
       //button
       btnStartGame = createGameText({
         x: 540,
-        y: 450,
+        y: 500,
         text: 'Continue',
         fontSize: 70,
         strokeThickness: 8
@@ -56,7 +55,7 @@ var victoryState = function(game) {};
       btnStartGame.anchor.setTo(0.5, 0.5);
       btnStartGame.inputEnabled = true;
       btnStartGame.input.useHandCursor = true;
-      btnStartGame.events.onInputDown.add(this.beginNextBattle, this);
+      btnStartGame.events.onInputDown.add(this.beginGamePlay, this);
       this.displayElements.add(btnStartGame);
 
       //fade in elements
@@ -68,10 +67,7 @@ var victoryState = function(game) {};
       //fullscreen toggle
       createFullscreenToggle(this);
     },
-    beginNextBattle: function(sprite, pointer) {
-      this.game.level += 1;
-      console.log("starting level " + this.game.level + " on " + this.game.difficulty + " difficulty");
-
+    beginGamePlay: function(sprite, pointer) {
       this.game.add.tween(this.displayElements)
         .to({
           alpha: 0.0

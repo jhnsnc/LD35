@@ -28,9 +28,9 @@ playState.prototype.generateShape = function(shapeType) {
   return shape;
 };
 
-playState.prototype.moveShapeToPoint = function(shape, r, c) {
+playState.prototype.moveShapeToPoint = function(grid, shape, r, c) {
   console.log('setting '+shape.type+' to ('+r+', '+c+')');
-  var targetPoint = this.grid[r][c];
+  var targetPoint = grid[r][c];
 
   shape.row = r;
   shape.col = c;
@@ -45,13 +45,13 @@ playState.prototype.moveShapeToPoint = function(shape, r, c) {
     shape.isPlaced = true;
     shape.sprite.rotation = 0;
     this.cycleCurrentShape();
-    //TODO: check if all shapes are done
+    // check if all shapes are done
     this.checkGridDone();
   }
 };
 
-playState.prototype.setDestinationToPoint = function(shape, r, c) {
-  var targetPoint = this.grid[r][c];
+playState.prototype.setDestinationToPoint = function(grid, shape, r, c) {
+  var targetPoint = grid[r][c];
 
   shape.destRow = r;
   shape.destCol = c;

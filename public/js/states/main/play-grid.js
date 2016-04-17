@@ -35,10 +35,6 @@ playState.prototype.setupGrid = function(numCols, numRows, width, height) {
 playState.prototype.makeSpriteFromGrid = function(grid) {
   var r, c, numRows, numCols, hasConnections, gridPoint;
 
-  var colorEnabled = 0xdddddd;
-  var colorDisabled = 0x454545;
-  var alphaEnabled = 1.0;
-  var alphaDisabled = 0.1;
   var lineWidth = 3.0;
   var gfx = new Phaser.Graphics(this.game, 0, 0);
 
@@ -51,10 +47,10 @@ playState.prototype.makeSpriteFromGrid = function(grid) {
       //up
       if (r > 0) {
         if (grid[r][c]['connects-up']) {
-          gfx.lineStyle(lineWidth, colorEnabled, alphaEnabled);
+          gfx.lineStyle(lineWidth, GRID_ENABLED_COLOR, GRID_ENABLED_ALPHA);
           hasConnections = true;
         } else {
-          gfx.lineStyle(lineWidth, colorDisabled, alphaDisabled);
+          gfx.lineStyle(lineWidth, GRID_DISABLED_COLOR, GRID_DISABLED_ALPHA);
         }
         gfx.moveTo(gridPoint.position.x, gridPoint.position.y);
         gfx.lineTo(grid[r-1][c].position.x, grid[r-1][c].position.y);
@@ -62,10 +58,10 @@ playState.prototype.makeSpriteFromGrid = function(grid) {
       //right
       if (c < numCols - 1) {
         if (grid[r][c]['connects-right']) {
-          gfx.lineStyle(lineWidth, colorEnabled, alphaEnabled);
+          gfx.lineStyle(lineWidth, GRID_ENABLED_COLOR, GRID_ENABLED_ALPHA);
           hasConnections = true;
         } else {
-          gfx.lineStyle(lineWidth, colorDisabled, alphaDisabled);
+          gfx.lineStyle(lineWidth, GRID_DISABLED_COLOR, GRID_DISABLED_ALPHA);
         }
         gfx.moveTo(gridPoint.position.x, gridPoint.position.y);
         gfx.lineTo(grid[r][c+1].position.x, grid[r][c+1].position.y);
@@ -73,10 +69,10 @@ playState.prototype.makeSpriteFromGrid = function(grid) {
       //down
       if (r < numRows - 1) {
         if (grid[r][c]['connects-down']) {
-          gfx.lineStyle(lineWidth, colorEnabled, alphaEnabled);
+          gfx.lineStyle(lineWidth, GRID_ENABLED_COLOR, GRID_ENABLED_ALPHA);
           hasConnections = true;
         } else {
-          gfx.lineStyle(lineWidth, colorDisabled, alphaDisabled);
+          gfx.lineStyle(lineWidth, GRID_DISABLED_COLOR, GRID_DISABLED_ALPHA);
         }
         gfx.moveTo(gridPoint.position.x, gridPoint.position.y);
         gfx.lineTo(grid[r+1][c].position.x, grid[r+1][c].position.y);
@@ -84,17 +80,17 @@ playState.prototype.makeSpriteFromGrid = function(grid) {
       //left
       if (c > 0) {
         if (grid[r][c]['connects-left']) {
-          gfx.lineStyle(lineWidth, colorEnabled, alphaEnabled);
+          gfx.lineStyle(lineWidth, GRID_ENABLED_COLOR, GRID_ENABLED_ALPHA);
           hasConnections = true;
         } else {
-          gfx.lineStyle(lineWidth, colorDisabled, alphaDisabled);
+          gfx.lineStyle(lineWidth, GRID_DISABLED_COLOR, GRID_DISABLED_ALPHA);
         }
         gfx.moveTo(gridPoint.position.x, gridPoint.position.y);
         gfx.lineTo(grid[r][c-1].position.x, grid[r][c-1].position.y);
       }
       //dot in the middle
       if (hasConnections) {
-        gfx.lineStyle(lineWidth, colorEnabled, alphaEnabled);
+        gfx.lineStyle(lineWidth, GRID_ENABLED_COLOR, GRID_ENABLED_ALPHA);
         gfx.drawCircle(gridPoint.position.x, gridPoint.position.y, 1.0);
       }
     }

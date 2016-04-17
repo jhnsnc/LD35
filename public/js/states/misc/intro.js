@@ -131,7 +131,7 @@ var introState = function(game) {};
       this.displayElements.add(btnStartGame);
       btnStartGame.inputEnabled = true;
       btnStartGame.input.useHandCursor = true;
-      btnStartGame.events.onInputDown.add(this.startNormalGame, this);
+      btnStartGame.events.onInputDown.add(this.beginGamePlay, this);
 
       //fade in elements
       this.game.add.tween(this.displayElements)
@@ -141,10 +141,8 @@ var introState = function(game) {};
 
       //fullscreen toggle
       createFullscreenToggle(this);
-
-      this.listenForPageKeys();
     },
-    beginNextBattle: function() {
+    beginGamePlay: function() {
       console.log("starting level " + this.game.level + " on " + this.game.difficulty + " difficulty");
 
       this.game.add.tween(this.displayElements)
@@ -154,32 +152,6 @@ var introState = function(game) {};
         .onComplete.add(function() {
           this.game.state.start("Play");
         }, this);
-    },
-    listenForPageKeys: function() {
-      pageUp = this.game.input.keyboard.addKey(33);
-      pageUp.onUp.add(this.incrementLevel, this);
-
-      pageDown = this.game.input.keyboard.addKey(34);
-      pageDown.onUp.add(this.decrementLevel, this);
-    },
-    incrementLevel: function() {
-      this.game.level += 1;
-      this.updateLevelDisplay();
-    },
-    decrementLevel: function() {
-      this.game.level -= 1;
-      if (this.game.level < 1) {
-        this.game.level = 1;
-      }
-      this.updateLevelDisplay();
-    },
-    updateLevelDisplay: function() {
-      this.txtCurrentLevel.alpha = 1.0;
-      this.txtCurrentLevel.text = "Level: "+this.game.level;
-    },
-    startNormalGame: function() {
-      this.game.difficulty = "normal";
-      this.beginNextBattle();
     }
   };
 })();
