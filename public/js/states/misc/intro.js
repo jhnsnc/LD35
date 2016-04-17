@@ -59,7 +59,7 @@ var introState = function(game) {};
       this.displayElements.add(txtTitle);
 
       //paragraph intro text
-      text = "Words and stuff";
+      text = 'Shift shapes around until they\'re all in the right spot.';
       txtParagraph = createGameText({
         x: 140,
         y: 140,
@@ -71,10 +71,10 @@ var introState = function(game) {};
       txtParagraph.wordWrapWidth = 800;
       this.displayElements.add(txtParagraph);
 
-      text = "These things are fun";
+      text = 'Use arrows or WASD to move. Press spacebar to swap cycle through shapes.';
       txtParagraph = createGameText({
         x: 140,
-        y: 250,
+        y: 205,
         text: text,
         fontSize: 30,
         strokeThickness: 5
@@ -83,7 +83,7 @@ var introState = function(game) {};
       txtParagraph.wordWrapWidth = 800;
       this.displayElements.add(txtParagraph);
 
-      text = "And fun is good";
+      text = 'Game is totally good and complete.';
       txtParagraph = createGameText({
         x: 140,
         y: 315,

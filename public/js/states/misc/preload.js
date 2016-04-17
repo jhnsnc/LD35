@@ -10,9 +10,16 @@ var preloadState = function(game) {};
 
       //shape elements
       game.load.image("shape_triangle", "assets/shapes/shape-triangle.png");
+      game.load.image("shape_outline_triangle", "assets/shapes/shape-triangle-outline.png");
+
       game.load.image("shape_square", "assets/shapes/shape-square.png");
+      game.load.image("shape_outline_square", "assets/shapes/shape-square-outline.png");
+
       game.load.image("shape_circle", "assets/shapes/shape-circle.png");
+      game.load.image("shape_outline_circle", "assets/shapes/shape-circle-outline.png");
+
       game.load.image("shape_star", "assets/shapes/shape-star.png");
+      game.load.image("shape_outline_star", "assets/shapes/shape-star-outline.png");
 
       //level elements
 

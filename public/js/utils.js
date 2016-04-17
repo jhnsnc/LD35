@@ -40,8 +40,8 @@ var toggleFullscreen = function(ctx) {
   }
 };
 
-var intBetween = function(min, max) {
-  return Math.floor((Math.random() * (max - min)) + min);
+var intBetween = function(min, max) { //inclusive [min, max]
+  return Math.floor((Math.random() * (max + 1 - min)) + min);
 }
 
 var disableEvents = function(element) {

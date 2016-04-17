@@ -64,16 +64,16 @@ playState.prototype.moveCurrentShape = function(direction) {
   if (currPoint['connects-'+direction]) {
     switch (direction) {
       case 'up':
-        this.setShapeToPoint(shape, shape.row-1, shape.col);
+        this.moveShapeToPoint(shape, shape.row-1, shape.col);
         break;
       case 'right':
-        this.setShapeToPoint(shape, shape.row, shape.col+1);
+        this.moveShapeToPoint(shape, shape.row, shape.col+1);
         break;
       case 'down':
-        this.setShapeToPoint(shape, shape.row+1, shape.col);
+        this.moveShapeToPoint(shape, shape.row+1, shape.col);
         break;
       case 'left':
-        this.setShapeToPoint(shape, shape.row, shape.col-1);
+        this.moveShapeToPoint(shape, shape.row, shape.col-1);
         break;
     }
   }

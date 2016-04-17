@@ -22,6 +22,7 @@ playState.prototype.setupGrid = function(numCols, numRows, width, height) {
         },
         row: r,
         col: c,
+        isOriginationPoint: false,
       };
       row.push(point);
     }
@@ -142,4 +143,73 @@ playState.prototype.addGridConnection = function(grid, row, col, direction) {
       }
       break;
   }
+};
+
+playState.prototype.connectAdjacentPoints = function(grid, r1, c1, r2, c2) {
+  if (r1 - r2 === 1 && c1 === c2) {
+    this.addGridConnection(grid, r1, c1, 'up');
+  } else if (r2 - r1 === 1 && c1 === c2) {
+    this.addGridConnection(grid, r1, c1, 'down');
+  } else if (c1 - c2 === 1 && r1 === r2) {
+    this.addGridConnection(grid, r1, c1, 'left');
+  } else if (c2 - c1 === 1 && r1 === r2) {
+    this.addGridConnection(grid, r1, c1, 'right');
+  }
+};
+
+playState.prototype.linkPointsOnGrid = function(grid, r1, c1, r2, c2) {
+  var i, delta, direction, magnitude;
+  var path = [];
+  var pathHead;
+
+  // create most direct initial path
+  pathHead = {r: r1, c: c1}
+  path.push(pathHead);
+  while (pathHead.r !== r2 || pathHead.c !== c2) {
+    var goHorizontal;
+    if (pathHead.r === r2) {
+      goHorizontal = true;
+    } else if (pathHead.c === c2) {
+      goHorizontal = false;
+    } else {
+      //flip a coin
+      goHorizontal = Math.random() >= 0.5;
+    }
+
+    if (goHorizontal) {
+      if (c2 > pathHead.c) {
+        pathHead = {r: pathHead.r, c: pathHead.c + 1};
+      } else {
+        pathHead = {r: pathHead.r, c: pathHead.c - 1};
+      }
+    } else {
+      if (r2 > pathHead.r) {
+        pathHead = {r: pathHead.r + 1, c: pathHead.c};
+      } else {
+        pathHead = {r: pathHead.r - 1, c: pathHead.c};
+      }
+    }
+    path.push(pathHead);
+  }
+
+  //TODO: ADD DEVIATIONS
+
+  // set path in stone
+  for (i = 1; i < path.length; i += 1) {
+    this.connectAdjacentPoints(grid, path[i-1].r, path[i-1].c, path[i].r, path[i].c);
+  }
+};
+
+playState.prototype.getUnlinkedNode = function(grid) {
+  var r, c;
+  var numRows = grid.length;
+  var numCols = grid[0].length;
+  for (r = 0; r < numRows; r += 1) {
+    for (c = 0; c < numCols; c += 1) {
+      if (grid[r][c].connections.length === 0) {
+        return {r: r, c: c};
+      }
+    }
+  }
+  return false;
 };

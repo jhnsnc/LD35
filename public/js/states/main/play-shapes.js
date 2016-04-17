@@ -15,14 +15,20 @@ playState.prototype.generateShape = function(shapeType) {
     sprite: this.game.add.sprite(0, 0, 'shape_'+shapeType),
     row: 0,
     col: 0,
+    destinationSprite: this.game.add.sprite(0, 0, 'shape_outline_'+shapeType),
+    destRow: 0,
+    destCol: 0,
+    isPlaced: false,
   };
   shape.sprite.scale.setTo(SHAPES_SCALE, SHAPES_SCALE);
   shape.sprite.anchor.setTo(0.5, 0.5);
+  shape.destinationSprite.scale.setTo(SHAPES_SCALE, SHAPES_SCALE);
+  shape.destinationSprite.anchor.setTo(0.5, 0.5);
 
   return shape;
 };
 
-playState.prototype.setShapeToPoint = function(shape, r, c) {
+playState.prototype.moveShapeToPoint = function(shape, r, c) {
   console.log('setting '+shape.type+' to ('+r+', '+c+')');
   var targetPoint = this.grid[r][c];
 
@@ -30,6 +36,27 @@ playState.prototype.setShapeToPoint = function(shape, r, c) {
   shape.col = c;
 
   shape.sprite.position.setTo(
+    targetPoint.position.x + this.gridOffset.x,
+    targetPoint.position.y + this.gridOffset.y
+  );
+
+  if (shape.row === shape.destRow && shape.col === shape.destCol) {
+    console.log('YAY! '+shape.type+' found its destination!');
+    shape.isPlaced = true;
+    shape.sprite.rotation = 0;
+    this.cycleCurrentShape();
+    //TODO: check if all shapes are done
+    this.checkGridDone();
+  }
+};
+
+playState.prototype.setDestinationToPoint = function(shape, r, c) {
+  var targetPoint = this.grid[r][c];
+
+  shape.destRow = r;
+  shape.destCol = c;
+
+  shape.destinationSprite.position.setTo(
     targetPoint.position.x + this.gridOffset.x,
     targetPoint.position.y + this.gridOffset.y
   );

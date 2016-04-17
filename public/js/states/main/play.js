@@ -6,27 +6,153 @@ var playState = function(game) {};
     create: function() {
       console.log("Starting Level Play");
 
-      //////////////////////////////
-      // prepare grid
-      //////////////////////////////
-      this.grid = this.setupGrid(18, 10, GRID_WIDTH, GRID_HEIGHT);
+      var i, j, randPoint;
 
-      // set random grid links
-      var rand, r, c, numRows, numCols; //FOOBAR
-      for (r = 0, numRows = this.grid.length; r < numRows; r += 1) {
-        for (c = 0, numCols = this.grid[r].length; c < numCols; c += 1) {
-          //right
-          rand = Math.random() >= 0.5;
-          if (rand) {
-            this.addGridConnection(this.grid, r, c, 'right');
+      //////////////////////////////
+      // grid and shapes basic init
+      this.grid = this.setupGrid(18, 10, GRID_WIDTH, GRID_HEIGHT);
+      this.shapes = this.generateShapes();
+      this.currentShapeIdx = 0;
+
+      var numRows = this.grid.length;
+      var numCols = this.grid[0].length;
+      for (i = 0; i < this.shapes.length; i += 1) {
+        // position shapes around edges
+        do {
+          randPoint = {};
+          if (Math.random() >= 0.5) {
+            //random row
+            randPoint.r = Math.floor(Math.random() * numRows);
+            randPoint.c = (Math.random() >= 0.5) ? 0 : numCols - 1;
+          } else {
+            //random col
+            randPoint.r = (Math.random() >= 0.5) ? 0 : numRows - 1;
+            randPoint.c = Math.floor(Math.random() * numCols);
           }
-          //down
-          rand = Math.random() >= 0.5;
-          if (rand) {
-            this.addGridConnection(this.grid, r, c, 'down');
+        } while(this.grid[randPoint.r][randPoint.c].isOriginationPoint);
+        this.shapes[i].row = randPoint.r;
+        this.shapes[i].col = randPoint.c;
+        this.grid[randPoint.r][randPoint.c].isOriginationPoint = true;
+
+        // position destinations (a minimum distance from shapes locations)
+        do {
+          randPoint = {};
+          randPoint.r = intBetween(1, numRows - 2);
+          randPoint.c = intBetween(1, numCols - 2);
+          randPoint.dist = Math.abs(randPoint.r - this.shapes[i].row) + Math.abs(randPoint.c - this.shapes[i].col);
+        } while(this.grid[randPoint.r][randPoint.c].isOriginationPoint || randPoint.dist < MIN_DESTINATION_CROW_DISTANCE)
+        this.shapes[i].destRow = randPoint.r;
+        this.shapes[i].destCol = randPoint.c;
+        this.grid[randPoint.r][randPoint.c].isOriginationPoint = true;
+      }
+
+      // connect shape points
+      for (i = 0; i < this.shapes.length; i += 1) {
+        this.linkPointsOnGrid(this.grid, this.shapes[i].row, this.shapes[i].col, this.shapes[i].destRow, this.shapes[i].destCol);
+      }
+
+      // add random "highway" paths for alternate routes
+      var pointA, pointB, comparison, attempts;
+      for (i = 0; i < NUM_HIGHWAY_PATHS; i += 1) {
+        console.log('building a highway');
+        //get point A
+        attempts = 0;
+        do {
+          attempts += 1;
+          pointA = {};
+          pointA.r = intBetween(0, numRows - 1);
+          pointA.c = intBetween(0, numCols - 1);
+          pointA.overlaps = false;
+          pointA.minDist = 30;
+          for (j = 0; j < this.shapes.length; j += 1) {
+            comparison = this.shapes[j];
+            pointA.overlaps = pointA.overlaps || this.grid[pointA.r][pointA.c].isOriginationPoint;
+            pointA.minDist = Math.min(pointA.minDist, (Math.abs(comparison.row - pointA.r) + Math.abs(comparison.col - pointA.c)));
+            pointA.minDist = Math.min(pointA.minDist, (Math.abs(comparison.destRow - pointA.r) + Math.abs(comparison.destCol - pointA.c)));
           }
+        } while((pointA.overlaps || pointA.minDist < MIN_HIGHWAY_CROW_DISTANCE) && attempts < MAX_HIGHWAY_ATTEMPTS);
+        console.log('got point A in '+attempts+' attemps');
+        if (attempts >= MAX_HIGHWAY_ATTEMPTS) {
+          continue; //couldn't get pointA. move along
         }
-      } //FOOBAR
+        //get point B
+        attempts = 0;
+        do {
+          attempts += 1;
+          pointB = {};
+          pointB.r = intBetween(0, numRows - 1);
+          pointB.c = intBetween(0, numCols - 1);
+          pointB.overlaps = false;
+          pointB.minDist = 30;
+          for (j = 0; j < this.shapes.length; j += 1) {
+            comparison = this.shapes[j];
+            pointB.overlaps = pointB.overlaps || this.grid[pointB.r][pointB.c].isOriginationPoint;
+            pointB.minDist = Math.min(pointB.minDist, (Math.abs(comparison.row - pointB.r) + Math.abs(comparison.col - pointB.c)));
+            pointB.minDist = Math.min(pointB.minDist, (Math.abs(comparison.destRow - pointB.r) + Math.abs(comparison.destCol - pointB.c)));
+          }
+          pointB.abDist = Math.abs(pointA.r - pointB.r) + Math.abs(pointA.c - pointB.c);
+        } while((pointB.overlaps || pointB.minDist < MIN_HIGHWAY_CROW_DISTANCE || pointB.abDist < MIN_HIGHWAY_CROW_LENGTH) && attempts < MAX_HIGHWAY_ATTEMPTS);
+        console.log('got point B in '+attempts+' attemps');
+        if (attempts >= MAX_HIGHWAY_ATTEMPTS) {
+          continue; //couldn't get pointA. move along
+        }
+        console.log('all good. placing points: ('+pointA.r+','+pointA.c+') and ('+pointB.r+','+pointB.c+')');
+        this.linkPointsOnGrid(this.grid, pointA.r, pointA.c, pointB.r, pointB.c);
+      }
+
+      // make sure there are no completely empty cells
+      var unlinkedNode = this.getUnlinkedNode(this.grid);
+      var allowedDirections;
+      while (unlinkedNode) {
+        console.log('Found unlinked node: ('+unlinkedNode.r+', '+unlinkedNode.c+')');
+        //get the next point until we connect to something
+        pointB = {
+            r: unlinkedNode.r,
+            c: unlinkedNode.c,
+        };
+        do {
+          pointA = pointB;
+
+          allowedDirections = ['up', 'right', 'down', 'left'];
+          // can't go out of bounds
+          if (pointA.r <= 0 && allowedDirections.indexOf('up') !== -1) { allowedDirections.splice(allowedDirections.indexOf('up'),1); }
+          if (pointA.r >= numRows - 1 && allowedDirections.indexOf('down') !== -1) { allowedDirections.splice(allowedDirections.indexOf('down'),1); }
+          if (pointA.c <= 0 && allowedDirections.indexOf('left') !== -1) { allowedDirections.splice(allowedDirections.indexOf('left'),1); }
+          if (pointA.c >= numRows - 1 && allowedDirections.indexOf('right') !== -1) { allowedDirections.splice(allowedDirections.indexOf('right'),1); }
+          // can't go back along same path
+          if (this.grid[pointA.r][pointA.c]['connects-up'] && allowedDirections.indexOf('up') !== -1) { allowedDirections.splice(allowedDirections.indexOf('up'),1); }
+          if (this.grid[pointA.r][pointA.c]['connects-right'] && allowedDirections.indexOf('right') !== -1) { allowedDirections.splice(allowedDirections.indexOf('right'),1); }
+          if (this.grid[pointA.r][pointA.c]['connects-down'] && allowedDirections.indexOf('down') !== -1) { allowedDirections.splice(allowedDirections.indexOf('down'),1); }
+          if (this.grid[pointA.r][pointA.c]['connects-left'] && allowedDirections.indexOf('left') !== -1) { allowedDirections.splice(allowedDirections.indexOf('left'),1); }
+
+          pointB = { // start w/ previous point
+            r: pointA.r,
+            c: pointA.c,
+          };
+          switch (allowedDirections[Math.floor(Math.random() * allowedDirections.length)]) { // move in one random direction
+            case 'up':
+              pointB.r -= 1;
+              break;
+            case 'down':
+              pointB.r += 1;
+              break;
+            case 'left':
+              pointB.c -= 1;
+              break;
+            case 'right':
+              pointB.c += 1;
+              break;
+          }
+
+          this.connectAdjacentPoints(this.grid, pointA.r, pointA.c, pointB.r, pointB.c);
+
+          console.log('connecting ('+pointA.r+','+pointA.c+') to ('+pointB.r+','+pointB.c+')');
+          console.log(this.grid[pointB.r][pointB.c].connections.length);
+          console.log(!(pointA.r === pointB.r && pointA.c === pointB.c));
+        } while(this.grid[pointB.r][pointB.c].connections.length < 2 && !(pointA.r === pointB.r && pointA.c === pointB.c));
+
+        unlinkedNode = this.getUnlinkedNode(this.grid);
+      }
 
       // get grid sprite
       this.gridSprite = this.makeSpriteFromGrid(this.grid);
@@ -35,26 +161,24 @@ var playState = function(game) {};
         x: this.gridSprite.position.x - (GRID_WIDTH / 2),
         y: this.gridSprite.position.y - (GRID_HEIGHT / 2),
       };
-      console.log('gridOffset',this.gridOffset);
 
+      // shape visual positioning
+      for (i = 0; i < this.shapes.length; i += 1) {
+        this.setDestinationToPoint(this.shapes[i], this.shapes[i].destRow, this.shapes[i].destCol);
+        this.shapes[i].destinationSprite.bringToTop();
+      }
+      for (i = 0; i < this.shapes.length; i += 1) {
+        this.moveShapeToPoint(this.shapes[i], this.shapes[i].row, this.shapes[i].col);
+        this.shapes[i].sprite.bringToTop();
+      }
       //////////////////////////////
-      // prepare shapes
-      //////////////////////////////
-      this.shapes = this.generateShapes();
-
-      var i, randPoint;
-      for (i = 0; i < this.shapes.length; i += 1) { //FOOBAR
-        this.setShapeToPoint(this.shapes[i], Math.floor(Math.random() * numRows), Math.floor(Math.random() * numCols));
-      } //FOOBAR
-
-      this.currentShapeIdx = 0; //FOOBAR
-
-      var txtCurrentLevel;
-      var bitmapData, grd;
 
       //////////////////////////////
       // other
       //////////////////////////////
+      var txtCurrentLevel;
+      var bitmapData, grd;
+
       // this.gameEnding = false;
       // this.victoryOrDeath = false;
 
@@ -97,7 +221,9 @@ var playState = function(game) {};
       // rotate shapes
       var i;
       for (i = 0; i < this.shapes.length; i += 1) {
-        this.shapes[i].sprite.rotation = this.shapes[i].sprite.rotation + (1 * DEG_TO_RAD);
+        if (!this.shapes[i].isPlaced) {
+          this.shapes[i].sprite.rotation = this.shapes[i].sprite.rotation + (1 * DEG_TO_RAD);
+        }
       }
     }
   };
@@ -110,7 +236,7 @@ var playState = function(game) {};
     this.game.add.tween(this.introCover)
       .to({
         alpha: 0.0
-      }, 2500, Phaser.Easing.Sinusoidal.InOut, true)
+      }, 1000, Phaser.Easing.Sinusoidal.InOut, true)
       .onComplete.add(function() {
         this.introCover.parent.removeChild(this.introCover);
       }, this);
@@ -219,5 +345,18 @@ var playState = function(game) {};
         break;
     }
   };
+
+  playState.prototype.checkGridDone = function() {
+    var isDone = true;
+    var i;
+    for (i = 0; i < this.shapes; i += 1) {
+      isDone = isDone && this.shapes[i].isPlaced;
+    }
+
+    if (isDone) {
+      console.log('HUZZAH! all shapes have been placed');
+      //TODO: get next grid ready and reset shapes/destinations
+    }
+  }
 
 })();
