@@ -160,7 +160,7 @@ playState.prototype.generatePlaySet = function() {
     playset.shapes[i].destinationSprite.bringToTop();
   }
   for (i = 0; i < playset.shapes.length; i += 1) {
-    this.moveShapeToPoint(playset.grid, playset.shapes[i], playset.shapes[i].row, playset.shapes[i].col);
+    this.moveShapeToPoint(playset.grid, playset.shapes[i], playset.shapes[i].row, playset.shapes[i].col, true /* suppress audio */);
     playset.shapes[i].sprite.bringToTop();
   }
 

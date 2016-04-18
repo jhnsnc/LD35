@@ -15,8 +15,8 @@ var victoryState = function(game) {};
       //title
       txtTitle = createGameText({
         x: 540,
-        y: 140,
-        text: 'Done!',
+        y: 200,
+        text: 'COMPLETE',
         fontSize: 80,
         strokeThickness: 8
       }, this);
@@ -26,17 +26,8 @@ var victoryState = function(game) {};
       //new level
       txtTime = createGameText({
         x: 540,
-        y: 280,
+        y: 300,
         text: 'You finished in '+ (this.game.finishTime) + ' seconds!',
-        fontSize: 40,
-        strokeThickness: 8
-      }, this);
-      txtTime.anchor.setTo(0.5, 0.5);
-      this.displayElements.add(txtTime);
-      txtTime = createGameText({
-        x: 540,
-        y: 360,
-        text: ' ',
         fontSize: 40,
         strokeThickness: 8
       }, this);
@@ -46,10 +37,11 @@ var victoryState = function(game) {};
       //button
       btnStartGame = createGameText({
         x: 540,
-        y: 500,
-        text: 'Continue',
+        y: 450,
+        text: 'play again',
         fontSize: 70,
-        strokeThickness: 8
+        strokeThickness: 8,
+        fill: '#ff0f3d'
       }, this);
       btnStartGame.fontWeight = 400;
       btnStartGame.anchor.setTo(0.5, 0.5);

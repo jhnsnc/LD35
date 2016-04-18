@@ -15,8 +15,8 @@ var titleState = function(game) {};
       //title
       txtTitle = createGameText({
         x: 540,
-        y: 200,
-        text: 'GOOD GAEM',
+        y: 250,
+        text: 'IMPULSE',
         fontSize: 120,
         strokeThickness: 0
       }, this);
@@ -28,11 +28,11 @@ var titleState = function(game) {};
       //start game button
       btnStartGame = createGameText({
         x: 540,
-        y: 450,
-        text: 'Play!',
+        y: 400,
+        text: 'play',
         fontSize: 50,
         strokeThickness: 8,
-        fill: '#ef0098'
+        fill: '#ff0f3d'
       }, this);
       btnStartGame.anchor.setTo(0.5, 0.5);
       this.displayElements.add(btnStartGame);

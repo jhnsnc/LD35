@@ -49,8 +49,8 @@ var introState = function(game) {};
       //title
       txtTitle = createGameText({
         x: 540,
-        y: 70,
-        text: 'How to play',
+        y: 110,
+        text: 'HOW TO PLAY',
         fontSize: 60,
         strokeThickness: 8
       }, this);
@@ -62,7 +62,7 @@ var introState = function(game) {};
       text = 'Shift shapes around until they\'re all in the right spot.';
       txtParagraph = createGameText({
         x: 140,
-        y: 140,
+        y: 175,
         text: text,
         fontSize: 30,
         strokeThickness: 5
@@ -71,10 +71,10 @@ var introState = function(game) {};
       txtParagraph.wordWrapWidth = 800;
       this.displayElements.add(txtParagraph);
 
-      text = 'Use arrows or WASD to move. Press spacebar to swap cycle through shapes.';
+      text = 'Move shapes with arrow keys or WASD. \nUse spacebar to cycle through shapes.';
       txtParagraph = createGameText({
         x: 140,
-        y: 205,
+        y: 240,
         text: text,
         fontSize: 30,
         strokeThickness: 5
@@ -83,26 +83,14 @@ var introState = function(game) {};
       txtParagraph.wordWrapWidth = 800;
       this.displayElements.add(txtParagraph);
 
-      text = 'Game is totally good and complete.';
+      text = 'Headphones recommend—adjust your volume now.';
       txtParagraph = createGameText({
         x: 140,
-        y: 315,
-        text: text,
-        fontSize: 30,
-        strokeThickness: 5
-      }, this);
-      txtParagraph.wordWrap = true;
-      txtParagraph.wordWrapWidth = 800;
-      this.displayElements.add(txtParagraph);
-
-      text = "Select difficulty:";
-      txtParagraph = createGameText({
-        x: 140,
-        y: 420,
+        y: 350,
         text: text,
         fontSize: 30,
         strokeThickness: 5,
-        fill: '#ef0098'
+        fill: '#ff0f3d'
       }, this);
       txtParagraph.wordWrap = true;
       txtParagraph.wordWrapWidth = 800;
@@ -121,16 +109,17 @@ var introState = function(game) {};
 
       //start game button
       btnStartGame = createGameText({
-        x: 500,
-        y: 415,
-        text: 'Start Gaem',
+        x: 540,
+        y: 420,
+        text: 'begin',
         fontSize: 40,
         strokeThickness: 0,
-        fill: '#ef0098'
+        fill: '#ff0f3d'
       }, this);
       this.displayElements.add(btnStartGame);
       btnStartGame.inputEnabled = true;
       btnStartGame.input.useHandCursor = true;
+      btnStartGame.anchor.setTo(0.5, 0.0);
       btnStartGame.events.onInputDown.add(this.beginGamePlay, this);
 
       //fade in elements

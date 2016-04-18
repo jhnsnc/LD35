@@ -25,7 +25,7 @@ playState.prototype.generateShape = function(shapeType) {
   destinationPulseEmitter.gravity = 0;
   destinationPulseEmitter.lifespan = SHAPES_PULSE_DURATION;
   destinationPulseEmitter.setRotation(0, 0);
-  destinationPulseEmitter.setScale(SHAPES_PULSE_SCALE * SHAPES_ACTIVE_SCALE, SHAPES_ACTIVE_SCALE, SHAPES_PULSE_SCALE * SHAPES_ACTIVE_SCALE, SHAPES_ACTIVE_SCALE, SHAPES_PULSE_DURATION, Phaser.Easing.Quadratic.Out);
+  destinationPulseEmitter.setScale(SHAPES_DESTINATION_PULSE_SCALE * SHAPES_ACTIVE_SCALE, SHAPES_ACTIVE_SCALE, SHAPES_DESTINATION_PULSE_SCALE * SHAPES_ACTIVE_SCALE, SHAPES_ACTIVE_SCALE, SHAPES_PULSE_DURATION, Phaser.Easing.Quadratic.Out);
   destinationPulseEmitter.setAlpha(SHAPES_PULSE_ALPHA, 0.0, SHAPES_PULSE_DURATION, Phaser.Easing.Quadratic.Out);
   destinationPulseEmitter.setXSpeed(0, 0);
   destinationPulseEmitter.setYSpeed(0, 0);
@@ -50,19 +50,27 @@ playState.prototype.generateShape = function(shapeType) {
   return shape;
 };
 
-playState.prototype.moveShapeToPoint = function(grid, shape, r, c) {
+playState.prototype.moveShapeToPoint = function(grid, shape, r, c, suppressAudio) {
   if (!shape.isPlaced) {
     console.log('setting '+shape.type+' to ('+r+', '+c+')');
     var targetPoint = grid[r][c];
 
+    // adjust model position
     shape.row = r;
     shape.col = c;
 
+    // adjust display position
     shape.sprite.position.setTo(
       targetPoint.position.x + this.gridOffset.x,
       targetPoint.position.y + this.gridOffset.y
     );
 
+    // play sound
+    if (!suppressAudio) {
+      this.playShapeSound(shape.type);
+    }
+
+    // check if shape is now at destination
     if (shape.row === shape.destRow && shape.col === shape.destCol) {
       console.log('YAY! '+shape.type+' found its destination!');
       shape.isPlaced = true;

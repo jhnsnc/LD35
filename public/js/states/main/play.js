@@ -78,18 +78,6 @@ var playState = function(game) {};
 
       // decode audio -- continue setup after decoded
       this.setupAudio();
-
-      // timer events!
-      this.activePulseTimer1 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShape, this);
-      this.game.time.events.repeat(SHAPES_PULSE_SEPARATION, 0, function() {
-        this.activePulseTimer2 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShape, this);
-      }, this);
-      this.game.time.events.repeat(SHAPES_PULSE_SEPARATION * 2, 0, function() {
-        this.activePulseDestinationTimer1 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShapeDestination, this);
-      }, this);
-      this.game.time.events.repeat(SHAPES_PULSE_SEPARATION * 3, 0, function() {
-        this.activePulseDestinationTimer2 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShapeDestination, this);
-      }, this);
     },
     update: function(evt) {
       if (!this.isCompleting) {
@@ -112,6 +100,21 @@ var playState = function(game) {};
   playState.prototype.startLevel = function() {
     console.log("ALL READY -- START LEVEL!");
 
+    // start timer
+    this.game.time.events.repeat(SHAPES_PULSE_SEPARATION * 2, 0, function() {
+      this.activePulseTimer1 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShape, this);
+    }, this);
+    this.game.time.events.repeat(SHAPES_PULSE_SEPARATION * 3, 0, function() {
+      this.activePulseTimer2 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShape, this);
+    }, this);
+    this.game.time.events.repeat(SHAPES_PULSE_SEPARATION * 4, 0, function() {
+      this.activePulseDestinationTimer1 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShapeDestination, this);
+    }, this);
+    this.game.time.events.repeat(SHAPES_PULSE_SEPARATION * 5, 0, function() {
+      this.activePulseDestinationTimer2 = this.game.time.events.loop(SHAPES_PULSE_FREQUENCY, this.pulseCurrentShapeDestination, this);
+    }, this);
+
+    // reveal content
     this.game.add.tween(this.introCover)
       .to({
         alpha: 0.0
@@ -120,10 +123,10 @@ var playState = function(game) {};
         this.introCover.parent.removeChild(this.introCover);
       }, this);
 
-    //interactivity
+    // interactivity
     this.setupKeyboardInput();
 
-    //music
+    // music
     this.startAllMusic();
   };
 
@@ -140,7 +143,7 @@ var playState = function(game) {};
     this.game.finishTime = this.game.finishTime.slice(0, this.game.finishTime.indexOf('.') + 2);
 
     // fade music
-    this.fadeAllMusic(3000);
+    this.fadeAllMusic(5000);
 
     // fade in cover graphic (black)
     gfxCover = this.game.add.graphics(0, 0);
@@ -149,7 +152,7 @@ var playState = function(game) {};
     gfxCover.endFill();
     gfxCover.alpha = 0.0;
     this.game.add.tween(gfxCover)
-      .to({alpha: 1.0}, 3100, Phaser.Easing.Sinusoidal.Out, true)
+      .to({alpha: 1.0}, 5100, Phaser.Easing.Sinusoidal.Out, true)
       .onComplete.add(function() {
         self.game.state.start("Victory");
       }, this);
@@ -185,6 +188,8 @@ var playState = function(game) {};
 
     // increment
     this.currentPlaysetIdx += 1;
+
+    this.crossFadeMusicTo(this.currentPlaysetIdx);
 
     if (this.currentPlaysetIdx < NUM_PLAYSETS) {
       // update label
